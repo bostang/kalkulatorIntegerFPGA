@@ -34,7 +34,7 @@ begin
 		-- mengonversi dari bit ke 7-segment
 	process(reset, hasil1, hasil2, hasil3, hasil4, out_on)
 	begin
-		case hasil1 is
+		case hasil4 is
 			when "0000" =>
 				dig0 <= "00000011"; -- 0
 		 	when "0001" =>
@@ -59,7 +59,7 @@ begin
 				dig0 <= "11111111";
 			end case;
 
-		case hasil2 is
+		case hasil3 is
 			when "0000" =>
 				dig1 <= "00000011"; -- 0
 		 	when "0001" =>
@@ -84,7 +84,7 @@ begin
 				dig1 <= "11111111";
 			end case;
 
-		case hasil3 is
+		case hasil2 is
 			when "0000" =>
 				dig2 <= "00000011"; -- 0
 		 	when "0001" =>
@@ -109,7 +109,7 @@ begin
 				dig2 <= "11111111";
 			end case;
 
-		case hasil4 is
+		case hasil1 is
 			when "0000" =>
 				dig3 <= "00000011"; -- 0
 		 	when "0001" =>
@@ -167,12 +167,22 @@ begin
 			segOut <= "11111111";
 		else
 			case selector is
-				when "0111" => segOut <= dig3; -- 0 (most significant byte [MSB])
-				when "1011" => segOut <= dig2; -- 0
-				when "1101" => segOut <= dig1; -- 5
-				when "1110" => segOut <= dig0; -- 5 (least significant byte [LSB])
+				when "0111" => segOut <= dig3; -- (most significant byte [MSB])
+				when "1011" => segOut <= dig2; --
+				when "1101" => segOut <= dig1; --
+				when "1110" => segOut <= dig0; -- (least significant byte [LSB])
 				when others => segOut <= "11111111";
 			end case;
 		end if;
 	end process seleksi;
 end arc_output;
+			
+	-- catatan
+-- hasil1 -> satuan
+-- hasil2 
+-- hasil3
+-- hasil4 -> ribuan
+-- dig3 -> ribuan 
+-- dig2
+-- dig1
+-- dig0 -> satuan
