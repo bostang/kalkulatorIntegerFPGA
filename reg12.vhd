@@ -8,17 +8,17 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 -- entitas
-entity reg is
+entity reg12 is
 	port
 	(
 		clk, load, clr: in std_logic;
 		D: in std_logic_vector( 11 downto 0 );
 		Q: out std_logic_vector( 11 downto 0 ) 
 	);
-end reg;
+end reg12;
 
 -- arsitektur
-architecture reg_arc of reg is 
+architecture reg_arc of reg12 is 
 begin
 	process(clr, clk, load, D) 
 	begin
