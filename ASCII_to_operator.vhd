@@ -14,7 +14,7 @@ use ieee.std_logic_1164.all;
 entity ASCII_to_operator is
 	port
 	(
-		opload : in std_logic_vector(7 downto 0); -- 8 bit input dalam bentuk ASCII
+		op_ASCII : in std_logic_vector(7 downto 0); -- 8 bit input dalam bentuk ASCII
 		optemp : out std_logic_vector(1 downto 0) -- sinyal keluaran
 	);
 end ASCII_to_operator;
@@ -22,15 +22,15 @@ end ASCII_to_operator;
 -- arsitektur
 architecture arc_ASCII_to_operator of ASCII_to_operator is
 begin
-	konversi : process(opload)
+	konversi : process(op_ASCII)
 	begin
-		if (opload = "00101011") then -- penjumlahan
+		if (op_ASCII = "00101011") then -- penjumlahan
 			optemp <= "10";
-		elsif (opload = "00101101") then -- pengurangan
+		elsif (op_ASCII = "00101101") then -- pengurangan
 			optemp <= "01";
-		elsif (opload = "00101010") then -- perkalian
+		elsif (op_ASCII = "00101010") then -- perkalian
 			optemp <= "11";
-		elsif (opload = "00101111") then -- pembagian
+		elsif (op_ASCII = "00101111") then -- pembagian
 			optemp <= "00";
 		end if;
 	end process konversi;
