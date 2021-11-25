@@ -9,16 +9,16 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 -- entitas
-entity divider is
+entity div is
     port
     (
         x,y    : in std_logic_vector(11 downto 0);
         result : out std_logic_vector(15 downto 0)
     );
-end divider;
+end div;
 
 -- arsitektur
-architecture arc_divider of divider is
+architecture arc_divider of div is
 begin
     result <= std_logic_vector(to_unsigned(to_integer(unsigned(x) / unsigned(y)),16));
 end arc_divider;
