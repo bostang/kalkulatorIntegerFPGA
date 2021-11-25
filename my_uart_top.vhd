@@ -1,6 +1,4 @@
--- Nama 		: Bostang Palaguna
--- NIM 		    : 13220055
--- Hari/Tanggal : Minggu, 24 Oktober 2021
+-- modul my_uart_top
 
 -- Very simple UART implementation
 -- by Arif Sasongko
