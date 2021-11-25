@@ -25,7 +25,7 @@ architecture behavior of toplevel is
 	component fsm is 
 		port
 		(		
-			clock 			: in std_logic; -- input clock
+		    clock 			: in std_logic; -- input clock
 		    reset			: in std_logic; -- FSM's reset
 		    xload, opload, yload, mux_on, out_on, clear: out std_logic;
 		    op 				: out std_logic_vector(1 downto 0) -- untuk memilih operator
@@ -181,13 +181,14 @@ begin
 	port map
 	(
 		--- clock 	=>	o_clock,
-		--- reset	=>	reset,
-		--- clr 	=> clr,		
-		--- xload	=> 	xload,
-		--- opload 	=>	opload,
-		--- yload 	=> 	yload,
-		--- mux_on 	=> 	mux_on,
-		--- out_on 	=>	out_on
+		reset	=>reset,
+		clr 	=> clr,		
+		xload	=> xload,
+		opload 	=>opload,
+		yload 	=> yload,
+		mux_on 	=> mux_on,
+		out_on 	=>out_on,
+		op 	=> op
 	);
 
 			--Data path
