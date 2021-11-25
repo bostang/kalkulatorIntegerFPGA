@@ -155,8 +155,8 @@ begin
 				yload 	<= '0';
 				mux_on 	<= '0';
 				out_on 	<= '0';
-				if (TOG_EN = '0') then NS <= STF;
-				else NS <= STG;
+				if (TOG_EN = '0') then NS <= STG;
+				else NS <= STF;
 				end if;
 			when STG =>				
 				loadx0 <= '0';
