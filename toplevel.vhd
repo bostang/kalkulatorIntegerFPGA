@@ -18,6 +18,7 @@ entity toplevel is
 	    digOut 	   : out std_logic_vector(3 downto 0);
 		segOut	   : out std_logic_vector(7 downto 0);
 		switch	   : in std_logic; -- switch untuk berpindah state
+		button 	   : in std_logic; -- button untuk mengirim 'U' ke termite
 		rx 		   : in std_logic;
 		tx 		   : out std_logic
     );
@@ -54,7 +55,7 @@ architecture behavior of toplevel is
 			
 				-- parallel part
 			outToRegister	: out std_logic_vector(7 downto 0) ;
-			
+			button			: in std_logic;
 				-- serial part
 			rs232_rx 		: in std_logic;
 			rs232_tx 		: out std_logic
@@ -67,7 +68,7 @@ architecture behavior of toplevel is
 			mux_on: in std_logic; --penanda mux digunakan
 			sel: in std_logic_vector (1 downto 0); -- selektor operasi
 			mult, sub, add, div: in std_logic_vector(15 downto 0); -- hasil operasi komparasi, pengurangan, penjumlahan 
-			output: out std_logic_vector(15 downto 0) -- output selektor
+			answer: out std_logic_vector(15 downto 0) -- output selektor
 		);
 	end component;
 
@@ -159,8 +160,8 @@ architecture behavior of toplevel is
 	component ASCII_to_binary is
 		port
 		(
-			ASCII_in : std_logic_vector(7 downto 0);
-			binary_out : std_logic_vector(3 downto 0)
+			ASCII_in : in std_logic_vector(7 downto 0);
+			binary_out : out std_logic_vector(3 downto 0)
 		);
 	end component;
 
@@ -251,6 +252,7 @@ begin
 	(
 		clk => clocktop,
 		rst_n => reset,
+		button => button,
 		outToRegister => outTermite,
 		rs232_rx => rx,
 		rs232_tx => tx
@@ -463,7 +465,7 @@ begin
 		sub    => result_sub,
 		add    => result_add,
 		div    => result_div,
-		output => ans
+		answer => ans
 	);
 
 	outputseparator : modulo
