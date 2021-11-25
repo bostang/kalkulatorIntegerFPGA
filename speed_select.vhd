@@ -1,6 +1,4 @@
--- Nama 		: Bostang Palaguna
--- NIM 		    : 13220055
--- Hari/Tanggal : Minggu, 24 Oktober 2021
+-- modul speed_select
 
 -- Library
 library ieee;
