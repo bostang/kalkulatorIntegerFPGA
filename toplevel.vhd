@@ -16,7 +16,10 @@ entity toplevel is
 	    s_opt	   : in std_logic_vector(1 downto 0); -- input untuk operator
 	    neg		   : out std_logic; -- LED yang akan menyala jika hasil perhitungan negatif
 	    digOut 	   : out std_logic_vector(3 downto 0);
-		segOut	   : out std_logic_vector(7 downto 0)
+		segOut	   : out std_logic_vector(7 downto 0);
+		switch	   : in std_logic; -- switch untuk berpindah state
+		rx 		   : in std_logic;
+		tx 		   : out std_logic
     );
 end toplevel;
 
@@ -25,11 +28,37 @@ architecture behavior of toplevel is
 	component fsm is 
 		port
 		(		
-		    clock 			: in std_logic; -- input clock
-		    reset			: in std_logic; -- FSM's reset
-		    xload, opload, yload, mux_on, out_on, clear: out std_logic;
-		    op 				: out std_logic_vector(1 downto 0) -- untuk memilih operator
+			TOG_EN 	 : in std_logic; -- toggle untuk berpindah state
+			clock, reset : in std_logic;
+			loadx0	 : out std_logic; -- sinyal load untuk register x0_ASCII 
+			loadx1	 : out std_logic; -- sinyal load untuk register x1_ASCII 
+			loadx2	 : out std_logic;  -- sinyal load untuk register x2_ASCII		
+			loady0	 : out std_logic; -- sinyal load untuk register y0_ASCII
+			loady1	 : out std_logic;  -- sinyal load untuk register y1_ASCII
+			loady2	 : out std_logic;  -- sinyal load untuk register y2_ASCII
+			loadop	 : out std_logic;
+			clr 	 : out std_logic;
+			xload	 : out std_logic;
+			opload 	 : out std_logic;
+			yload 	 : out std_logic;
+			mux_on 	 : out std_logic;
+			out_on 	 : out std_logic
 		); 
+	end component;
+
+	component interfaceUART is
+		port
+		(
+			clk 			: in std_logic;
+			rst_n 			: in std_logic;
+			
+				-- parallel part
+			outToRegister	: out std_logic_vector(7 downto 0) ;
+			
+				-- serial part
+			rs232_rx 		: in std_logic;
+			rs232_tx 		: out std_logic
+		);
 	end component;
 
 	component mux is 
@@ -48,6 +77,16 @@ architecture behavior of toplevel is
 			clk, load, clr : in std_logic;
 			D : in std_logic_vector(11 downto 0);
 			Q : out std_logic_vector(11 downto 0) 
+		);
+	end component;
+
+	component reg8 is
+		port
+		(
+			REG_IN : in std_logic_vector(7 downto 0);
+			LD,CLK : in std_logic;
+			reset  : in std_logic;
+			REG_OUT : out std_logic_vector(7 downto 0)
 		);
 	end component;
 
@@ -143,6 +182,7 @@ architecture behavior of toplevel is
 	end component;
 
 	signal x2_ASCII, x1_ASCII, x0_ASCII, y2_ASCII, y1_ASCII, y0_ASCII : std_logic_vector(7 downto 0);	
+	signal op_ASCII : std_logic_vector(7 downto 0);
 	signal x2, x1, x0, y2, y1, y0 : std_logic_vector(3 downto 0);
 	signal x_temp, y_temp : std_logic_vector(11 downto 0);
 	signal xload, yload, opload : std_logic;
@@ -155,10 +195,14 @@ architecture behavior of toplevel is
 	signal result_mult, result_sub, result_add, result_div : std_logic_vector(15 downto 0);
 	signal x,y : std_logic_vector(11 downto 0);
 	signal clr : std_logic;
-	---signal o_clock : std_logic;
+	signal clock_FSM : std_logic;
+
+	signal loady2, loady1, loady0, loadx2, loadx1, loadx0, loadop : std_logic;
+	signal outTermite : std_logic_vector(7 downto 0);
 
 		-- deskripsi sinyal:
 	--  x2_ASCII, x1_ASCII, x0_ASCII, y2_ASCII, y1_ASCII, y0_ASCII : nilai ASCII yang diterima dari interfaceUART yang akan diolah menjadi angka pada ASCII_to_binary
+	-- op_ASCII : nilai ASCII yang diterima dari interface UART yang akan menjadi sinyal selektor pada multiplexer
 	-- dig1, dig2, dig3, dig4 : hasil perhitungan yang telah dipisahkan ke masing-masing digit 
 		-- dari blok output separator dan akan diteruskan ke blok display
 	-- ans : hasil perhitungan aritmatika yang diteruskan dari multiplexer ke modulo	
@@ -174,24 +218,113 @@ architecture behavior of toplevel is
 	-- x_temp, y_temp : angka 3 digit yang diterima dari combineInput dan akan disimpan pada register operand
 	-- x2, x1, x0, y2, y1, y0 : sinyal keluaran ASCII_to_binary yang akan diteruskan ke combine input
 	-- out_on : sinyal yang mengendalikan display
+	-- outTermite : sinyal yang berasal dari interfaceUART yang akan diteruskan ke REG_ASCII_y2, REG_ASCII_y1, REG_ASCII_y0
+		-- REG_ASCII_x2, REG_ASCII_x1, REG_ASCII_x0, REG_ASCII_operator
 begin
 			-- control path
 		-- FSM
 	fsm_controller : fsm
 	port map
 	(
-		--- clock 	=>	o_clock,
-		reset	=>reset,
-		clr 	=> clr,		
-		xload	=> xload,
-		opload 	=>opload,
-		yload 	=> yload,
-		mux_on 	=> mux_on,
-		out_on 	=>out_on,
-		op 	=> op
+		TOG_EN 	 => switch,
+		clock    => clock_FSM,
+		reset 	 => reset,
+		loadx0	 => loadx0,
+		loadx1	 => loadx1,
+		loadx2	 => loadx2,
+		loady0	 => loady0,
+		loady1	 => loady1,
+		loady2	 => loady2,
+		loadop	 => loadop,
+		clr 	 => clr,
+		xload	 => xload,
+		opload 	 => opload,
+		yload 	 => yload,
+		mux_on 	 => mux_on,
+		out_on 	 => out_on
 	);
 
 			--Data path
+
+	UART : interfaceUART
+	port map
+	(
+		clk => clocktop,
+		rst_n => reset,
+		outToRegister => outTermite,
+		rs232_rx => rx,
+		rs232_tx => tx
+	);
+
+	REG_ASCII_y2: reg8
+	port map
+	(
+		REG_IN => outTermite,
+		LD => loady2,
+		CLK => clocktop,
+		reset => clr,
+		REG_OUT => y2_ASCII
+	);
+
+	REG_ASCII_y1: reg8
+	port map
+	(
+		REG_IN => outTermite,
+		LD => loady1,
+		CLK => clocktop,
+		reset => clr,
+		REG_OUT => y1_ASCII
+	);
+
+	REG_ASCII_y0: reg8
+	port map
+	(
+		REG_IN => outTermite,
+		LD => loady0,
+		CLK => clocktop,
+		reset => clr,
+		REG_OUT => y0_ASCII
+	);
+
+	REG_ASCII_x2: reg8
+	port map
+	(
+		REG_IN => outTermite,
+		LD => loadx2,
+		CLK => clocktop,
+		reset => clr,
+		REG_OUT => x2_ASCII
+	);
+	REG_ASCII_x1: reg8
+	port map
+	(
+		REG_IN => outTermite,
+		LD => loadx1,
+		CLK => clocktop,
+		reset => clr,
+		REG_OUT => x1_ASCII
+	);
+
+	REG_ASCII_x0: reg8
+	port map
+	(
+		REG_IN => outTermite,
+		LD => loadx0,
+		CLK => clocktop,
+		reset => clr,
+		REG_OUT => x0_ASCII
+	);
+
+	REG_ASCII_operator: reg8
+	port map
+	(
+		REG_IN => outTermite,
+		LD => loadop,
+		CLK => clocktop,
+		reset => clr,
+		REG_OUT => op_ASCII
+	);
+
 
 	ASCII_to_binary_x2 : ASCII_to_binary
 	port map
@@ -235,6 +368,12 @@ begin
 		binary_out => y0
 	);
 
+	ASCII_to_operator_1 : ASCII_to_operator
+	port map
+	(
+		op_ASCII => op_ASCII,
+		optemp => optemp
+	);
 	x_combine : combineInput
 	port map
 	(
