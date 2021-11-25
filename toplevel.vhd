@@ -196,7 +196,7 @@ architecture behavior of toplevel is
 	signal x,y : std_logic_vector(11 downto 0);
 	signal clr : std_logic;
 	signal clock_FSM : std_logic;
-
+  	signal clk_divider : unsigned(15 downto 0):=(others=>'0'); -- di-inisiasi dengan nol
 	signal loady2, loady1, loady0, loadx2, loadx1, loadx0, loadop : std_logic;
 	signal outTermite : std_logic_vector(7 downto 0);
 
@@ -491,4 +491,20 @@ begin
 		digOut => digOut,
 		segOut => segOut
 	);
+
+-- menampilkan output ke 7-segment
+
+	clockDivider : process(reset,clocktop)
+		-- mendapatkan clock dengan frekuensi yang kita inginkan
+		begin
+		  if(reset='0') then -- reset = '0' berarti tombol reset ditekan
+			clk_divider   <= (others=>'0');
+		  elsif(rising_edge(clocktop)) then
+			clk_divider   <= clk_divider + 1;
+		  end if;
+	end process clockDivider;
+
+	--clk_out <= clk_divider(15);  -- f_out = 50 Mhz /(2^15)
+	clock_FSM <= clk_divider(15); 
+
 end behavior;
