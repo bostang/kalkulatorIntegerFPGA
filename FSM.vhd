@@ -33,7 +33,7 @@ end FSM;
 architecture arc_FSM_sc1 of FSM is
 
 		-- mendefinisikan tipe bentukan : state_type
-	type state_type is (STA, STB, STC, STD, STE, STF, STG); 
+	type state_type is (STA, STB, STC, STD, STE, STF, STG, STH, STI); 
 	signal PS, NS : state_type; -- PS : present state, NS : next state
 begin
 	sync_proc : process (clock, NS, reset)
@@ -190,7 +190,6 @@ begin
 				yload 	<= '1';
 				mux_on 	<= '0';
 				out_on 	<= '0';
-				op 		<= '0';
 				if (TOG_EN = '0') then NS <= STI;
 				else NS <= STH;
 				end if;
