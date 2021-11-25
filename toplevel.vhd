@@ -13,7 +13,6 @@ entity toplevel is
 	port
 	(   clocktop   : in std_logic; -- input clock
 	    reset	   : in std_logic; -- FSM's reset
-	    s_opt	   : in std_logic_vector(1 downto 0); -- input untuk operator
 	    neg		   : out std_logic; -- LED yang akan menyala jika hasil perhitungan negatif
 	    digOut 	   : out std_logic_vector(3 downto 0);
 		segOut	   : out std_logic_vector(7 downto 0);
