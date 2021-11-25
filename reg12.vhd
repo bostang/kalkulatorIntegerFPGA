@@ -22,7 +22,7 @@ architecture reg_arc of reg12 is
 begin
 	process(clr, clk, load, D) 
 	begin
-		if( clr = '1' ) then
+		if( clr = '0' ) then
 			Q <= "000000000000";
 		elsif( clk'event and clk = '1') then
 			if( load = '1' and D < 1000 ) then
