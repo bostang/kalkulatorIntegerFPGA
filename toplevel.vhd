@@ -436,6 +436,7 @@ begin
 	(
 		x => x,
 		y => y,
+		neg => neg,
 		result => result_sub
 	);
 
