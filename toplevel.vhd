@@ -155,7 +155,7 @@ architecture behavior of toplevel is
 	signal result_mult, result_sub, result_add, result_div : std_logic_vector(15 downto 0);
 	signal x,y : std_logic_vector(11 downto 0);
 	signal clr : std_logic;
-	signal o_clock : std_logic;
+	---signal o_clock : std_logic;
 
 		-- deskripsi sinyal:
 	--  x2_ASCII, x1_ASCII, x0_ASCII, y2_ASCII, y1_ASCII, y0_ASCII : nilai ASCII yang diterima dari interfaceUART yang akan diolah menjadi angka pada ASCII_to_binary
@@ -180,14 +180,14 @@ begin
 	fsm_controller : fsm
 	port map
 	(
-		clock 	=>	o_clock,
-		reset	=>	reset,
-		clr 	=> clr,		
-		xload	=> 	xload,
-		opload 	=>	opload,
-		yload 	=> 	yload,
-		mux_on 	=> 	mux_on,
-		out_on 	=>	out_on
+		--- clock 	=>	o_clock,
+		--- reset	=>	reset,
+		--- clr 	=> clr,		
+		--- xload	=> 	xload,
+		--- opload 	=>	opload,
+		--- yload 	=> 	yload,
+		--- mux_on 	=> 	mux_on,
+		--- out_on 	=>	out_on
 	);
 
 			--Data path
