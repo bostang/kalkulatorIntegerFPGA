@@ -64,7 +64,7 @@ begin
 				loady1 <= '0';
 				loady2 <= '0';
 				loadop <= '0';
-				clr 	<= '0'; -- clr = '0' -> tombol reset ditekan
+				clr 	<= '1'; -- clr = '0' -> artinya tombol reset ditekan
 				xload	<= '0';
 				opload 	<= '0';
 				yload 	<= '0';
@@ -81,7 +81,7 @@ begin
 				loady1 <= '0';
 				loady2 <= '0';
 				loadop <= '0';
-				clr 	<= '0'; -- clr = '0' -> tombol reset ditekan
+				clr 	<= '1';
 				xload	<= '0';
 				opload 	<= '0';
 				yload 	<= '0';
@@ -98,7 +98,7 @@ begin
 				loady1 <= '0';
 				loady2 <= '0';
 				loadop <= '0';
-				clr 	<= '0'; -- clr = '0' -> tombol reset ditekan
+				clr 	<= '1'; 
 				xload	<= '0';
 				opload 	<= '0';
 				yload 	<= '0';
@@ -115,7 +115,7 @@ begin
 				loady1 <= '0';
 				loady2 <= '1';
 				loadop <= '0';
-				clr 	<= '0'; -- clr = '0' -> tombol reset ditekan
+				clr 	<= '1'; 
 				xload	<= '0';
 				opload 	<= '0';
 				yload 	<= '0';
@@ -132,7 +132,7 @@ begin
 				loady1 <= '1';
 				loady2 <= '0';
 				loadop <= '0';
-				clr 	<= '0'; -- clr = '0' -> tombol reset ditekan
+				clr 	<= '1'; 
 				xload	<= '0';
 				opload 	<= '0';
 				yload 	<= '0';
@@ -149,7 +149,7 @@ begin
 				loady1 <= '0';
 				loady2 <= '0';
 				loadop <= '0';
-				clr 	<= '0'; -- clr = '0' -> tombol reset ditekan
+				clr 	<= '1'; 
 				xload	<= '0';
 				opload 	<= '0';
 				yload 	<= '0';
@@ -166,7 +166,7 @@ begin
 				loady1 <= '0';
 				loady2 <= '0';
 				loadop <= '1';
-				clr 	<= '0'; -- clr = '0' -> tombol reset ditekan
+				clr 	<= '1'; 
 				xload	<= '0';
 				opload 	<= '0';
 				yload 	<= '0';
