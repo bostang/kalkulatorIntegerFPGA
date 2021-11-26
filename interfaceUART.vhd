@@ -45,7 +45,6 @@ architecture RTL of interfaceUART is
 	signal send_data,receive_data	: std_logic_vector(7 downto 0);
 	signal receive					: std_logic;
 	signal receive_c				: std_logic;
-	signal processed_data  			: std_logic_vector(7 downto 0); -- signal
 begin
 
 	UART: my_uart_top 
