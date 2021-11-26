@@ -196,6 +196,7 @@ architecture behavior of toplevel is
 	signal x,y : std_logic_vector(11 downto 0);
 	signal clr : std_logic;
 	signal clock_FSM : std_logic;
+	signal clk_out : std_logic;
   	signal clk_divider : unsigned(15 downto 0):=(others=>'0'); -- di-inisiasi dengan nol
 	signal loady2, loady1, loady0, loadx2, loadx1, loadx0, loadop : std_logic;
 	signal outTermite : std_logic_vector(7 downto 0);
@@ -203,21 +204,25 @@ architecture behavior of toplevel is
 		-- deskripsi sinyal:
 	--  x2_ASCII, x1_ASCII, x0_ASCII, y2_ASCII, y1_ASCII, y0_ASCII : nilai ASCII yang diterima dari interfaceUART yang akan diolah menjadi angka pada ASCII_to_binary
 	-- op_ASCII : nilai ASCII yang diterima dari interface UART yang akan menjadi sinyal selektor pada multiplexer
+	-- x2, x1, x0, y2, y1, y0 : sinyal keluaran ASCII_to_binary yang akan diteruskan ke combine input
+	-- x_temp, y_temp : angka 3 digit yang diterima dari combineInput dan akan disimpan pada register operand
+	-- xload, yload : sinyal load pada register untuk menyimpan nilai operand
+	-- opload : sinyal load pada register untuk menyimpan operator
 	-- dig1, dig2, dig3, dig4 : hasil perhitungan yang telah dipisahkan ke masing-masing digit 
 		-- dari blok output separator dan akan diteruskan ke blok display
 	-- ans : hasil perhitungan aritmatika yang diteruskan dari multiplexer ke modulo	
-	-- op : sinyal untuk memilih operasi apa yang akan diteruskan pada multiplexer
 	-- mux_on : sinyal untuk menentukan kapan multiplexer harus meneruskan outputnya
+	-- out_on : sinyal yang mengendalikan display
+	-- optemp : sinyal keluaran ASCII to operator yang akan disimpan di register operator 
+	-- op : sinyal untuk memilih operasi apa yang akan diteruskan pada multiplexer
 	-- result_mult, result_sub, result_add, result_div : hasil perhitungan aritmatika
 		-- dari blok adder, subtractor, multiplier, dan divider
 	-- x, y : sinyal bilangan 12 bit yang siap untuk diteruskan ke blok operasi aritmatika (add,sub,mult,div)
-	-- optemp : sinyal keluaran ASCII to operator yang akan disimpan di register operator 
-	-- xload, yload : sinyal load pada register untuk menyimpan nilai operand
-	-- opload : sinyal load pada register untuk menyimpan operator
 	-- clr : sinyal untuk reset nilai yang disimpan di register dan display
-	-- x_temp, y_temp : angka 3 digit yang diterima dari combineInput dan akan disimpan pada register operand
-	-- x2, x1, x0, y2, y1, y0 : sinyal keluaran ASCII_to_binary yang akan diteruskan ke combine input
-	-- out_on : sinyal yang mengendalikan display
+	-- clock_FSM : clock untuk perpindahan state pada FSM
+	-- clk_out : clock untuk menggilir 7-segment pada blok output ( display )
+	-- clk_divider : sinyal N-mod counter untuk pembagi clock -> untuk meng-generate clock_FSM dan clk_out
+	-- loady2, loady1, loady0, loadx2, loadx1, loadx0, loadop -> load untuk register yang menyimpan input dari termite berupa ASCII
 	-- outTermite : sinyal yang berasal dari interfaceUART yang akan diteruskan ke REG_ASCII_y2, REG_ASCII_y1, REG_ASCII_y0
 		-- REG_ASCII_x2, REG_ASCII_x1, REG_ASCII_x0, REG_ASCII_operator
 begin
@@ -482,7 +487,7 @@ begin
 	display	: output
 	port map
 	(
-		clk => clocktop,
+		clk => clk_out,
 		reset => clr,
 		hasil1 => dig1, 
 		hasil2 => dig2, 
@@ -505,7 +510,7 @@ begin
 		  end if;
 	end process clockDivider;
 
-	--clk_out <= clk_divider(15);  -- f_out = 50 Mhz /(2^15)
+	clk_out <= clk_divider(15);  -- f_out = 50 Mhz /(2^15)
 	clock_FSM <= clk_divider(15); 
 
 end behavior;
