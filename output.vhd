@@ -34,7 +34,7 @@ begin
 		-- mengonversi dari bit ke 7-segment
 	process(reset, hasil1, hasil2, hasil3, hasil4, out_on)
 	begin
-		case hasil4 is
+		case hasil1 is
 			when "0000" =>
 				dig0 <= "00000011"; -- 0
 		 	when "0001" =>
@@ -59,7 +59,7 @@ begin
 				dig0 <= "11111111";
 			end case;
 
-		case hasil3 is
+		case hasil2 is
 			when "0000" =>
 				dig1 <= "00000011"; -- 0
 		 	when "0001" =>
@@ -84,7 +84,7 @@ begin
 				dig1 <= "11111111";
 			end case;
 
-		case hasil2 is
+		case hasil3 is
 			when "0000" =>
 				dig2 <= "00000011"; -- 0
 		 	when "0001" =>
@@ -109,7 +109,7 @@ begin
 				dig2 <= "11111111";
 			end case;
 
-		case hasil1 is
+		case hasil4 is
 			when "0000" =>
 				dig3 <= "00000011"; -- 0
 		 	when "0001" =>
