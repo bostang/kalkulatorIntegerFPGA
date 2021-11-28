@@ -3,6 +3,9 @@
 	-- pergantian state pada FSM menggunakan mekanisme pendeteksian start bit ( pada state A sampai dengan I )
 	-- dan juga switch (pada state I sampai dengan L [saat menampilkan hasil ke termite] )
 
+	-- catatan : un-comment bagian yang ditandai ':)' untuk mengaktifkan LEDstate
+		-- yaitu LED yang menunjukkan bahwa kita sedang berada di state tertentu
+
 -- library
 library ieee;
 use ieee.std_logic_1164.all;
@@ -26,6 +29,8 @@ entity FSM is
 		yload 	 : out std_logic;
 		mux_on 	 : out std_logic;
 		out_on 	 : out std_logic;
+
+		--LEDstate : out std_logic_vector(11 downto 0);  -- :)
 		
 		PBdispTermite : in std_logic;
 		mux_on_selectorOutToTermite : out std_logic;
@@ -77,6 +82,8 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
+				--LEDstate <= "011111111111"; --  :)
+
 				if (TOG_EN = '1') then NS <= STB;
 				else NS <= STA;
 				end if;
@@ -96,6 +103,8 @@ begin
 				out_on 	<= '0';	
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
+
+				--LEDstate <= "101111111111"; --  :)
 
 				if (TOG_EN = '0') then NS <= STC;
 				else NS <= STB;
@@ -117,6 +126,8 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
+				--LEDstate <= "110111111111"; --  :)
+
 				if (TOG_EN = '1') then NS <= STD;
 				else NS <= STC;
 				end if;
@@ -136,6 +147,8 @@ begin
 				out_on 	<= '0';		
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
+
+				--LEDstate <= "111011111111"; --  :)
 
 				if (TOG_EN = '0') then NS <= STE;
 				else NS <= STD;
@@ -157,6 +170,8 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
+				--LEDstate <= "111101111111"; --  :)
+
 				if (TOG_EN = '1') then NS <= STF;
 				else NS <= STE;
 				end if;
@@ -177,6 +192,8 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
+				--LEDstate <= "111110111111"; --  :)
+
 				if (TOG_EN = '0') then NS <= STG;
 				else NS <= STF;
 				end if;
@@ -196,6 +213,8 @@ begin
 				out_on 	<= '0';	
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
+
+				--LEDstate <= "111111011111"; --  :)
 
 				if (TOG_EN = '1') then NS <= STH;
 				else NS <= STG;
@@ -218,6 +237,8 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
+				--LEDstate <= "111111101111"; --  :)
+
 				if (TOG_EN = '0') then NS <= STI;
 				else NS <= STH;
 				end if;
@@ -238,6 +259,8 @@ begin
 				out_on 	<= '1';
 				mux_on_selectorOutToTermite <= '1';
 				selectorOutToTermite <= "00";
+
+				--LEDstate <= "111111110111"; --  :)
 
 				if (PBdispTermite = '0') then
 					NS <= STJ;
@@ -264,6 +287,8 @@ begin
 				mux_on_selectorOutToTermite <= '1';
 				selectorOutToTermite <= "01";
 
+				--LEDstate <= "111111111011"; --  :)
+
 				if (PBdispTermite = '1') then
 					NS <= STK;
 				else
@@ -286,6 +311,8 @@ begin
 				out_on 	<= '1';
 				mux_on_selectorOutToTermite <= '1';
 				selectorOutToTermite <= "10";
+
+				--LEDstate <= "111111111101"; --  :)
 
 				if (PBdispTermite = '0') then
 					NS <= STL;
@@ -310,6 +337,8 @@ begin
 				mux_on_selectorOutToTermite <= '1';
 				selectorOutToTermite <= "11";
 				
+				--LEDstate <= "111111111110"; --  :)
+
 				NS <= STL;
 
 			when others =>
