@@ -82,7 +82,7 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
-				--LEDstate <= "011111111111"; --  :)
+				--LEDstate <= "100000000000"; --  :)
 
 				if (TOG_EN = '1') then NS <= STB;
 				else NS <= STA;
@@ -104,7 +104,7 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
-				--LEDstate <= "101111111111"; --  :)
+				--LEDstate <= "010000000000"; --  :)
 
 				if (TOG_EN = '0') then NS <= STC;
 				else NS <= STB;
@@ -126,7 +126,7 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
-				--LEDstate <= "110111111111"; --  :)
+				--LEDstate <= "001000000000"; --  :)
 
 				if (TOG_EN = '1') then NS <= STD;
 				else NS <= STC;
@@ -148,7 +148,7 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
-				--LEDstate <= "111011111111"; --  :)
+				--LEDstate <= "000100000000"; --  :)
 
 				if (TOG_EN = '0') then NS <= STE;
 				else NS <= STD;
@@ -170,7 +170,7 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
-				--LEDstate <= "111101111111"; --  :)
+				--LEDstate <= "000010000000"; --  :)
 
 				if (TOG_EN = '1') then NS <= STF;
 				else NS <= STE;
@@ -192,7 +192,7 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
-				--LEDstate <= "111110111111"; --  :)
+				--LEDstate <= "000001000000"; --  :)
 
 				if (TOG_EN = '0') then NS <= STG;
 				else NS <= STF;
@@ -214,7 +214,7 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
-				--LEDstate <= "111111011111"; --  :)
+				--LEDstate <= "000000100000"; --  :)
 
 				if (TOG_EN = '1') then NS <= STH;
 				else NS <= STG;
@@ -237,7 +237,7 @@ begin
 				mux_on_selectorOutToTermite <= '0';
 				selectorOutToTermite <= "00";
 
-				--LEDstate <= "111111101111"; --  :)
+				--LEDstate <= "000000010000"; --  :)
 
 				if (TOG_EN = '0') then NS <= STI;
 				else NS <= STH;
@@ -260,7 +260,7 @@ begin
 				mux_on_selectorOutToTermite <= '1';
 				selectorOutToTermite <= "00";
 
-				--LEDstate <= "111111110111"; --  :)
+				--LEDstate <= "000000001000"; --  :)
 
 				if (PBdispTermite = '0') then
 					NS <= STJ;
@@ -287,7 +287,7 @@ begin
 				mux_on_selectorOutToTermite <= '1';
 				selectorOutToTermite <= "01";
 
-				--LEDstate <= "111111111011"; --  :)
+				--LEDstate <= "000000000100"; --  :)
 
 				if (PBdispTermite = '1') then
 					NS <= STK;
@@ -312,7 +312,7 @@ begin
 				mux_on_selectorOutToTermite <= '1';
 				selectorOutToTermite <= "10";
 
-				--LEDstate <= "111111111101"; --  :)
+				--LEDstate <= "000000000010"; --  :)
 
 				if (PBdispTermite = '0') then
 					NS <= STL;
@@ -337,7 +337,7 @@ begin
 				mux_on_selectorOutToTermite <= '1';
 				selectorOutToTermite <= "11";
 				
-				--LEDstate <= "111111111110"; --  :)
+				--LEDstate <= "000000000001"; --  :)
 
 				NS <= STL;
 
