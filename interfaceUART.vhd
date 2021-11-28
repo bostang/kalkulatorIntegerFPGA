@@ -16,8 +16,9 @@ entity interfaceUART is
 		rst_n 			: in std_logic;
 		
 			-- parallel part
-		button 			: in std_logic;
-		outToRegister	: out std_logic_vector(7 downto 0) ;
+		button 			: in std_logic; -- tombol untuk mengirimkan data ke termite
+		outToTermite 	: in std_logic_vector(7 downto 0); -- data yang ingin dikirimkan ke termite
+		outToRegister	: out std_logic_vector(7 downto 0);
 		
 			-- serial part
 		rs232_rx 		: in std_logic;
@@ -64,9 +65,16 @@ begin
 		rs232_rx 	=> rs232_rx,
 		rs232_tx 	=> rs232_tx
 	);
+
+			-- sisi transmitter ( menerima hasil perhitungan dan menampilkan ke termite )
+
+	kirimDatakeTermite : process(clk)
+	begin
+		--send_data <= "01010101"; -- dalam desimal : 85 --> dalam ASCII : U
+		send_data <= outToTermite;
+	end process kirimDatakeTermite;
 	
-	send_data <= "01010101"; -- dalam desimal : 85 --> dalam ASCII : U
-	
+			-- sisi receiver ( mengirim dari termite ke 7-segment )
 	kirimDatake7Seg : process(clk)
 		-- jika data sudah sukses diterima, akan dikirim ke register x2, x1, x0, y2, y1, y0, op
 	begin
