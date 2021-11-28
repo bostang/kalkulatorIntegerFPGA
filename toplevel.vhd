@@ -2,6 +2,9 @@
 	-- blok yang menggabungkan semua komponen / blok ( top level entity)
 	-- untuk menggambarkan datapath dari rangkaian kalkulator
 
+	-- catatan : un-comment bagian yang ditandai ':)' untuk mengaktifkan LEDstate
+		-- yaitu LED yang menunjukkan bahwa kita sedang berada di state tertentu
+
 -- library
 library ieee;
 use ieee.std_logic_1164.all;
@@ -16,8 +19,7 @@ entity toplevel is
 	    neg		   : out std_logic; -- LED yang akan menyala jika hasil perhitungan negatif
 	    digOut 	   : out std_logic_vector(3 downto 0);
 		segOut	   : out std_logic_vector(7 downto 0);
-		--switch	   : in std_logic; -- switch untuk berpindah state
-			-- akan digantikan dengan trans
+		--LEDstate   : out std_logic_vector(11 downto 0); 		--  :)
 		button 	   : in std_logic; -- button untuk mengirim hasil operasi ke termite
 		rx 		   : in std_logic;
 		tx 		   : out std_logic
@@ -44,6 +46,7 @@ architecture behavior of toplevel is
 			yload 	 : out std_logic;
 			mux_on 	 : out std_logic;
 			out_on 	 : out std_logic;
+			--LEDstate : out std_logic_vector(11 downto 0);  -- :)
 			PBdispTermite : in std_logic;
 			mux_on_selectorOutToTermite : out std_logic;
 			selectorOutToTermite : out std_logic_vector(1 downto 0)
@@ -219,7 +222,6 @@ architecture behavior of toplevel is
 	signal result_mult, result_sub, result_add, result_div : std_logic_vector(15 downto 0);
 	signal x,y : std_logic_vector(11 downto 0);
 	signal clr : std_logic;
-	signal clock_FSM : std_logic;
 	signal clk_out : std_logic;
   	signal clk_divider : unsigned(15 downto 0):=(others=>'0'); -- di-inisiasi dengan nol
 	signal loady2, loady1, loady0, loadx2, loadx1, loadx0, loadop : std_logic;
@@ -248,9 +250,8 @@ architecture behavior of toplevel is
 		-- dari blok adder, subtractor, multiplier, dan divider
 	-- x, y : sinyal bilangan 12 bit yang siap untuk diteruskan ke blok operasi aritmatika (add,sub,mult,div)
 	-- clr : sinyal untuk reset nilai yang disimpan di register dan display
-	-- clock_FSM : clock untuk perpindahan state pada FSM
 	-- clk_out : clock untuk menggilir 7-segment pada blok output ( display )
-	-- clk_divider : sinyal N-mod counter untuk pembagi clock -> untuk meng-generate clock_FSM dan clk_out
+	-- clk_divider : sinyal N-mod counter untuk pembagi clock -> untuk meng-generate clk_out
 	-- loady2, loady1, loady0, loadx2, loadx1, loadx0, loadop -> load untuk register yang menyimpan input dari termite berupa ASCII
 	-- fromTermite : sinyal yang berasal dari interfaceUART yang akan diteruskan ke REG_ASCII_y2, REG_ASCII_y1, REG_ASCII_y0
 		-- REG_ASCII_x2, REG_ASCII_x1, REG_ASCII_x0, REG_ASCII_operator
@@ -268,7 +269,7 @@ begin
 		--TOG_EN 	 => switch,
 			-- telah digantikan dengan mekanisme deteksi start bit
 		TOG_EN => trans,
-		clock    => clock_FSM,
+		clock    => clocktop,
 		reset 	 => reset,
 		loadx0	 => loadx0,
 		loadx1	 => loadx1,
@@ -283,6 +284,7 @@ begin
 		yload 	 => yload,
 		mux_on 	 => mux_on,
 		out_on 	 => out_on,
+		--LEDstate => LEDstate,  		-- :)
 		PBdispTermite => button,
 		mux_on_selectorOutToTermite => mux_on_selectorOutToTermite,
 		selectorOutToTermite => selectorOutToTermite
@@ -572,6 +574,4 @@ begin
 	end process clockDivider;
 
 	clk_out <= clk_divider(15);  -- f_out = 50 Mhz /(2^15)
-	clock_FSM <= clk_divider(15); 
-
 end behavior;
