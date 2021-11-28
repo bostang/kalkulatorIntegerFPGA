@@ -9,7 +9,7 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all;
 
 -- entitas
-entity mux is
+entity mux8bit is
 	port
 	(
 		mux_on 		           : in std_logic; -- penanda mux digunakan [ akan dikendalikan FSM ]
@@ -17,10 +17,10 @@ entity mux is
 		in11, in01, in10, in00 : in std_logic_vector(7 downto 0); -- hasil operasi komparasi, pengurangan, penjumlahan 
 		outmux 		           : out std_logic_vector(7 downto 0) -- output selektor
 	); 
-end mux;
+end mux8bit;
 
 -- arsitektur
-architecture mux_arc of mux is
+architecture mux8bit_arc of mux8bit is
 begin
 	process(mux_on, sel, in11, in01, in10, in00) 
 	begin
@@ -40,4 +40,4 @@ begin
 			outmux <= (others => '0');
 		end if;
 	end process; 
-end mux_arc;
+end mux8bit_arc;
