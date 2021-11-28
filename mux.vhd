@@ -1,6 +1,5 @@
 -- modul mux
-	-- Blok yang mengatur output dari blok operasi mana
-	-- yang dijadikan output berdasarkan input operator
+-- Blok yang mengatur output dari blok operasi mana yang dijadikan output berdasarkan input operator
 
 -- library
 library ieee;
