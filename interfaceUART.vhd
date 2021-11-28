@@ -21,7 +21,10 @@ entity interfaceUART is
 		
 			-- serial part
 		rs232_rx 		: in std_logic;
-		rs232_tx 		: out std_logic
+		rs232_tx 		: out std_logic;
+
+			-- untuk perpindahan state dengan mendeteksi start bit
+		trans : out std_logic
 	);
 end entity;
 
@@ -45,6 +48,8 @@ architecture RTL of interfaceUART is
 	signal send_data,receive_data	: std_logic_vector(7 downto 0);
 	signal receive					: std_logic;
 	signal receive_c				: std_logic;
+
+	signal temp_trans : std_logic := '1';
 begin
 
 	UART: my_uart_top 
@@ -70,6 +75,15 @@ begin
 			receive_c <= receive;
 			if ((receive = '0') and (receive_c = '1')) then
 				outToRegister <= receive_data;
+
+					-- mekanisme reset agar temp_trans kembali ke '1' -> agar behaviornya predictable
+				if (rst_n = '0') then
+					temp_trans <= '1';
+				else
+					temp_trans <= not temp_trans;
+				end if;
+				trans <= temp_trans;
+
 			end if;
 		end if;
 	end process kirimDatake7Seg;
