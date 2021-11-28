@@ -43,7 +43,10 @@ architecture behavior of toplevel is
 			opload 	 : out std_logic;
 			yload 	 : out std_logic;
 			mux_on 	 : out std_logic;
-			out_on 	 : out std_logic
+			out_on 	 : out std_logic;
+			PBdispTermite : in std_logic;
+			mux_on_selectorOutToTermite : out std_logic;
+			selectorOutToTermite : out std_logic_vector(1 downto 0)
 		); 
 	end component;
 
@@ -54,8 +57,9 @@ architecture behavior of toplevel is
 			rst_n 			: in std_logic;
 			
 				-- parallel part
-			outToRegister	: out std_logic_vector(7 downto 0) ;
-			button			: in std_logic;
+			outToRegister	: out std_logic_vector(7 downto 0);-- data yang diterima dari termite
+			button			: in std_logic; -- push button untuk menampilkan data pada termite
+			outToTermite  	: in std_logic_vector(7 downto 0); -- data yang ingin ditampilkan di termite
 				-- serial part
 			rs232_rx 		: in std_logic;
 			rs232_tx 		: out std_logic;
@@ -71,6 +75,16 @@ architecture behavior of toplevel is
 			mult, sub, add, div: in std_logic_vector(15 downto 0); -- hasil operasi komparasi, pengurangan, penjumlahan 
 			answer: out std_logic_vector(15 downto 0) -- output selektor
 		);
+	end component;
+
+	component mux4bit is
+	port
+	(
+		mux_on 		           : in std_logic; -- penanda mux digunakan [ akan dikendalikan FSM ]
+		sel 	 	           : in std_logic_vector (1 downto 0); -- selektor operasi [ akan dikendalikan FSM]
+		in11, in01, in10, in00 : in std_logic_vector(3 downto 0); -- hasil operasi komparasi, pengurangan, penjumlahan 
+		outmux 		           : out std_logic_vector(3 downto 0) -- output selektor
+	); 
 	end component;
 
 	component reg12 is --register 12 bit untuk menyimpan operan
@@ -150,11 +164,11 @@ architecture behavior of toplevel is
 		port
 		(
 			clk		: in std_logic;
-			input 	: in std_logic_vector(15 downto 0); -- input tahun switch
-			hasil1	: out std_logic_vector(3 downto 0); -- input untuk operator
-			hasil2	: out std_logic_vector(3 downto 0); -- input untuk operator		    
-			hasil3	: out std_logic_vector(3 downto 0); -- input untuk operator
-			hasil4	: out std_logic_vector(3 downto 0) -- input untuk operator
+			input 	: in std_logic_vector(15 downto 0); 
+			hasil1	: out std_logic_vector(3 downto 0);
+			hasil2	: out std_logic_vector(3 downto 0);
+			hasil3	: out std_logic_vector(3 downto 0);
+			hasil4	: out std_logic_vector(3 downto 0) 
 		);
 	end component;
 
@@ -174,6 +188,14 @@ architecture behavior of toplevel is
 			optemp : out std_logic_vector(1 downto 0) -- sinyal keluaran
 		);
 	end component;
+
+	component binary_to_ASCII is
+	port
+	(
+		ASCII_out : out std_logic_vector(7 downto 0);
+		binary_in : in std_logic_vector(3 downto 0)
+	);
+	end component ;
 
 	component combineInput is
 		port
@@ -201,9 +223,13 @@ architecture behavior of toplevel is
 	signal clk_out : std_logic;
   	signal clk_divider : unsigned(15 downto 0):=(others=>'0'); -- di-inisiasi dengan nol
 	signal loady2, loady1, loady0, loadx2, loadx1, loadx0, loadop : std_logic;
-	signal outTermite : std_logic_vector(7 downto 0);
-
+	signal fromTermite : std_logic_vector(7 downto 0);
+	signal outToTermite : std_logic_vector(7 downto 0);
+	signal selectorOutToTermite : std_logic_vector(1 downto 0);
+	signal mux_on_selectorOutToTermite: std_logic;
 	signal trans : std_logic;
+	signal digOut_toBTAconverter : std_logic_vector(3 downto 0);
+
 		-- deskripsi sinyal:
 	--  x2_ASCII, x1_ASCII, x0_ASCII, y2_ASCII, y1_ASCII, y0_ASCII : nilai ASCII yang diterima dari interfaceUART yang akan diolah menjadi angka pada ASCII_to_binary
 	-- op_ASCII : nilai ASCII yang diterima dari interface UART yang akan menjadi sinyal selektor pada multiplexer
@@ -226,9 +252,13 @@ architecture behavior of toplevel is
 	-- clk_out : clock untuk menggilir 7-segment pada blok output ( display )
 	-- clk_divider : sinyal N-mod counter untuk pembagi clock -> untuk meng-generate clock_FSM dan clk_out
 	-- loady2, loady1, loady0, loadx2, loadx1, loadx0, loadop -> load untuk register yang menyimpan input dari termite berupa ASCII
-	-- outTermite : sinyal yang berasal dari interfaceUART yang akan diteruskan ke REG_ASCII_y2, REG_ASCII_y1, REG_ASCII_y0
+	-- fromTermite : sinyal yang berasal dari interfaceUART yang akan diteruskan ke REG_ASCII_y2, REG_ASCII_y1, REG_ASCII_y0
 		-- REG_ASCII_x2, REG_ASCII_x1, REG_ASCII_x0, REG_ASCII_operator
 	-- trans : sinyal untuk mekanisme pergantian state dengan mendeteksi start bit
+	-- outToTermite : nilai ASCII hasil perhitungan yang akan ditampilkan pada termite
+	-- selectorOutToTermite : selektor multiplexer untuk mengirimkan hasil perhitungan ke converter binary_to_ASCII
+	-- mux_on_selectorOutToTermite : sinyal yang menghidupkan multiplexer untuk mengirimkan hasil perhitungan ke converter binary_to_ASCII
+	-- digOut_toBTAconverter : digit yang akan diteruskan ke converter binary to ASCII
 begin
 			-- control path
 		-- FSM
@@ -252,7 +282,10 @@ begin
 		opload 	 => opload,
 		yload 	 => yload,
 		mux_on 	 => mux_on,
-		out_on 	 => out_on
+		out_on 	 => out_on,
+		PBdispTermite => button,
+		mux_on_selectorOutToTermite => mux_on_selectorOutToTermite,
+		selectorOutToTermite => selectorOutToTermite
 	);
 
 			--Data path
@@ -263,7 +296,8 @@ begin
 		clk => clocktop,
 		rst_n => reset,
 		button => button,
-		outToRegister => outTermite,
+		outToRegister => fromTermite,
+		outToTermite => outToTermite,
 		rs232_rx => rx,
 		rs232_tx => tx,
 		trans => trans
@@ -272,7 +306,7 @@ begin
 	REG_ASCII_y2: reg8
 	port map
 	(
-		REG_IN => outTermite,
+		REG_IN => fromTermite,
 		LD => loady2,
 		CLK => clocktop,
 		reset => clr,
@@ -282,7 +316,7 @@ begin
 	REG_ASCII_y1: reg8
 	port map
 	(
-		REG_IN => outTermite,
+		REG_IN => fromTermite,
 		LD => loady1,
 		CLK => clocktop,
 		reset => clr,
@@ -292,7 +326,7 @@ begin
 	REG_ASCII_y0: reg8
 	port map
 	(
-		REG_IN => outTermite,
+		REG_IN => fromTermite,
 		LD => loady0,
 		CLK => clocktop,
 		reset => clr,
@@ -302,7 +336,7 @@ begin
 	REG_ASCII_x2: reg8
 	port map
 	(
-		REG_IN => outTermite,
+		REG_IN => fromTermite,
 		LD => loadx2,
 		CLK => clocktop,
 		reset => clr,
@@ -311,7 +345,7 @@ begin
 	REG_ASCII_x1: reg8
 	port map
 	(
-		REG_IN => outTermite,
+		REG_IN => fromTermite,
 		LD => loadx1,
 		CLK => clocktop,
 		reset => clr,
@@ -321,7 +355,7 @@ begin
 	REG_ASCII_x0: reg8
 	port map
 	(
-		REG_IN => outTermite,
+		REG_IN => fromTermite,
 		LD => loadx0,
 		CLK => clocktop,
 		reset => clr,
@@ -331,7 +365,7 @@ begin
 	REG_ASCII_operator: reg8
 	port map
 	(
-		REG_IN => outTermite,
+		REG_IN => fromTermite,
 		LD => loadop,
 		CLK => clocktop,
 		reset => clr,
@@ -468,7 +502,7 @@ begin
 		result => result_div
 	);
 
-	multiplexer	: mux
+	multiplexerOperator	: mux
 	port map
 	(
 		mux_on => mux_on,
@@ -480,6 +514,26 @@ begin
 		answer => ans
 	);
 
+	multiplexerOutToTermite : mux4bit 
+		-- untuk memilih digit mana yang akan diteruskan ke converter binary_to_ASCII
+		-- agar kemudian dikirimkan ke interfaceUART bagian transmitter
+	port map
+	(	
+		mux_on => mux_on_selectorOutToTermite,
+		sel    => selectorOutToTermite,
+		in00   => dig4,
+		in01    => dig3,
+		in10    => dig2,
+		in11    => dig1,
+		outmux => digOut_toBTAconverter
+	);
+
+	BTAconverter: binary_to_ASCII
+	port map
+	(
+		binary_in => digOut_toBTAconverter,
+		ASCII_out => outToTermite
+	);
 	outputseparator : modulo
 	port map
 	(
