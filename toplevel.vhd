@@ -16,8 +16,9 @@ entity toplevel is
 	    neg		   : out std_logic; -- LED yang akan menyala jika hasil perhitungan negatif
 	    digOut 	   : out std_logic_vector(3 downto 0);
 		segOut	   : out std_logic_vector(7 downto 0);
-		switch	   : in std_logic; -- switch untuk berpindah state
-		button 	   : in std_logic; -- button untuk mengirim 'U' ke termite
+		--switch	   : in std_logic; -- switch untuk berpindah state
+			-- akan digantikan dengan trans
+		button 	   : in std_logic; -- button untuk mengirim hasil operasi ke termite
 		rx 		   : in std_logic;
 		tx 		   : out std_logic
     );
@@ -57,7 +58,8 @@ architecture behavior of toplevel is
 			button			: in std_logic;
 				-- serial part
 			rs232_rx 		: in std_logic;
-			rs232_tx 		: out std_logic
+			rs232_tx 		: out std_logic;
+			trans 			: out std_logic := '1'
 		);
 	end component;
 
@@ -201,6 +203,7 @@ architecture behavior of toplevel is
 	signal loady2, loady1, loady0, loadx2, loadx1, loadx0, loadop : std_logic;
 	signal outTermite : std_logic_vector(7 downto 0);
 
+	signal trans : std_logic;
 		-- deskripsi sinyal:
 	--  x2_ASCII, x1_ASCII, x0_ASCII, y2_ASCII, y1_ASCII, y0_ASCII : nilai ASCII yang diterima dari interfaceUART yang akan diolah menjadi angka pada ASCII_to_binary
 	-- op_ASCII : nilai ASCII yang diterima dari interface UART yang akan menjadi sinyal selektor pada multiplexer
@@ -225,13 +228,16 @@ architecture behavior of toplevel is
 	-- loady2, loady1, loady0, loadx2, loadx1, loadx0, loadop -> load untuk register yang menyimpan input dari termite berupa ASCII
 	-- outTermite : sinyal yang berasal dari interfaceUART yang akan diteruskan ke REG_ASCII_y2, REG_ASCII_y1, REG_ASCII_y0
 		-- REG_ASCII_x2, REG_ASCII_x1, REG_ASCII_x0, REG_ASCII_operator
+	-- trans : sinyal untuk mekanisme pergantian state dengan mendeteksi start bit
 begin
 			-- control path
 		-- FSM
 	fsm_controller : fsm
 	port map
 	(
-		TOG_EN 	 => switch,
+		--TOG_EN 	 => switch,
+			-- telah digantikan dengan mekanisme deteksi start bit
+		TOG_EN => trans,
 		clock    => clock_FSM,
 		reset 	 => reset,
 		loadx0	 => loadx0,
@@ -259,7 +265,8 @@ begin
 		button => button,
 		outToRegister => outTermite,
 		rs232_rx => rx,
-		rs232_tx => tx
+		rs232_tx => tx,
+		trans => trans
 	);
 
 	REG_ASCII_y2: reg8
