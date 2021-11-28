@@ -25,7 +25,11 @@ entity FSM is
 		opload 	 : out std_logic;
 		yload 	 : out std_logic;
 		mux_on 	 : out std_logic;
-		out_on 	 : out std_logic
+		out_on 	 : out std_logic;
+		
+		PBdispTermite : in std_logic;
+		mux_on_selectorOutToTermite : out std_logic;
+		selectorOutToTermite : out std_logic_vector(1 downto 0)
 	);
 end FSM;
 
@@ -33,7 +37,7 @@ end FSM;
 architecture arc_FSM_sc1 of FSM is
 
 		-- mendefinisikan tipe bentukan : state_type
-	type state_type is (STA, STB, STC, STD, STE, STF, STG, STH, STI); 
+	type state_type is (STA, STB, STC, STD, STE, STF, STG, STH, STI, STJ, STK, STL); 
 	signal PS, NS : state_type; -- PS : present state, NS : next state
 begin
 	sync_proc : process (clock, NS, reset)
@@ -45,7 +49,7 @@ begin
 		end if;
 	end process sync_proc;
 
-	comb_proc : process(PS, TOG_EN)
+	comb_proc : process(PS, TOG_EN, PBdispTermite)
 	begin
 			-- initial condition
 		loadx0 <= '0';
@@ -70,6 +74,9 @@ begin
 				yload 	<= '0';
 				mux_on 	<= '0';
 				out_on 	<= '0';
+				mux_on_selectorOutToTermite <= '0';
+				selectorOutToTermite <= "00";
+
 				if (TOG_EN = '1') then NS <= STB;
 				else NS <= STA;
 				end if;
@@ -86,7 +93,10 @@ begin
 				opload 	<= '0';
 				yload 	<= '0';
 				mux_on 	<= '0';
-				out_on 	<= '0';			
+				out_on 	<= '0';	
+				mux_on_selectorOutToTermite <= '0';
+				selectorOutToTermite <= "00";
+
 				if (TOG_EN = '0') then NS <= STC;
 				else NS <= STB;
 				end if;
@@ -103,7 +113,10 @@ begin
 				opload 	<= '0';
 				yload 	<= '0';
 				mux_on 	<= '0';
-				out_on 	<= '0';				
+				out_on 	<= '0';	
+				mux_on_selectorOutToTermite <= '0';
+				selectorOutToTermite <= "00";
+
 				if (TOG_EN = '1') then NS <= STD;
 				else NS <= STC;
 				end if;
@@ -120,7 +133,10 @@ begin
 				opload 	<= '0';
 				yload 	<= '0';
 				mux_on 	<= '0';
-				out_on 	<= '0';			
+				out_on 	<= '0';		
+				mux_on_selectorOutToTermite <= '0';
+				selectorOutToTermite <= "00";
+
 				if (TOG_EN = '0') then NS <= STE;
 				else NS <= STD;
 				end if;
@@ -137,7 +153,10 @@ begin
 				opload 	<= '0';
 				yload 	<= '0';
 				mux_on 	<= '0';
-				out_on 	<= '0';			
+				out_on 	<= '0';
+				mux_on_selectorOutToTermite <= '0';
+				selectorOutToTermite <= "00";
+
 				if (TOG_EN = '1') then NS <= STF;
 				else NS <= STE;
 				end if;
@@ -155,6 +174,9 @@ begin
 				yload 	<= '0';
 				mux_on 	<= '0';
 				out_on 	<= '0';
+				mux_on_selectorOutToTermite <= '0';
+				selectorOutToTermite <= "00";
+
 				if (TOG_EN = '0') then NS <= STG;
 				else NS <= STF;
 				end if;
@@ -171,7 +193,10 @@ begin
 				opload 	<= '0';
 				yload 	<= '0';
 				mux_on 	<= '0';
-				out_on 	<= '0';			
+				out_on 	<= '0';	
+				mux_on_selectorOutToTermite <= '0';
+				selectorOutToTermite <= "00";
+
 				if (TOG_EN = '1') then NS <= STH;
 				else NS <= STG;
 				end if;
@@ -190,6 +215,9 @@ begin
 				yload 	<= '1';
 				mux_on 	<= '0';
 				out_on 	<= '0';
+				mux_on_selectorOutToTermite <= '0';
+				selectorOutToTermite <= "00";
+
 				if (TOG_EN = '0') then NS <= STI;
 				else NS <= STH;
 				end if;
@@ -208,8 +236,82 @@ begin
 				yload 	<= '0';
 				mux_on 	<= '1';
 				out_on 	<= '1';
-				NS <= STI;
-	
+				mux_on_selectorOutToTermite <= '1';
+				selectorOutToTermite <= "00";
+
+				if (PBdispTermite = '0') then
+					NS <= STJ;
+				else
+					NS <= STI;
+				end if;
+
+				--NS <= STI;
+
+				when STJ =>		-- mengonversi ke ASCII, menggabungkan input, dan menyimpan operan ke register X dan Y,	
+				loadx0 <= '0'; -- serta menyimpan operator
+				loadx1 <= '0';
+				loadx2 <= '0';
+				loady0 <= '0';
+				loady1 <= '0';
+				loady2 <= '0';
+				loadop <= '0';
+				clr 	<= '1'; -- clr = '1' -> register dan display TIDAK di-reset
+				xload	<= '0';
+				opload 	<= '0';
+				yload 	<= '0';
+				mux_on 	<= '1';
+				out_on 	<= '1';
+				mux_on_selectorOutToTermite <= '1';
+				selectorOutToTermite <= "01";
+
+				if (PBdispTermite = '1') then
+					NS <= STK;
+				else
+					NS <= STJ;
+				end if;
+
+				when STK =>		-- mengonversi ke ASCII, menggabungkan input, dan menyimpan operan ke register X dan Y,	
+				loadx0 <= '0'; -- serta menyimpan operator
+				loadx1 <= '0';
+				loadx2 <= '0';
+				loady0 <= '0';
+				loady1 <= '0';
+				loady2 <= '0';
+				loadop <= '0';
+				clr 	<= '1'; -- clr = '1' -> register dan display TIDAK di-reset
+				xload	<= '0';
+				opload 	<= '0';
+				yload 	<= '0';
+				mux_on 	<= '1';
+				out_on 	<= '1';
+				mux_on_selectorOutToTermite <= '1';
+				selectorOutToTermite <= "10";
+
+				if (PBdispTermite = '0') then
+					NS <= STL;
+				else
+					NS <= STK;
+				end if;
+
+				when STL =>		-- mengonversi ke ASCII, menggabungkan input, dan menyimpan operan ke register X dan Y,	
+				loadx0 <= '0'; -- serta menyimpan operator
+				loadx1 <= '0';
+				loadx2 <= '0';
+				loady0 <= '0';
+				loady1 <= '0';
+				loady2 <= '0';
+				loadop <= '0';
+				clr 	<= '1'; -- clr = '1' -> register dan display TIDAK di-reset
+				xload	<= '0';
+				opload 	<= '0';
+				yload 	<= '0';
+				mux_on 	<= '1';
+				out_on 	<= '1';
+				mux_on_selectorOutToTermite <= '1';
+				selectorOutToTermite <= "11";
+				
+				NS <= STL;
+
 			when others =>
 				loadx0 <= '0';
 				loadx1 <= '0';
