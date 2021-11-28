@@ -1,6 +1,8 @@
--- modul mux
-	-- Blok yang mengatur output dari blok operasi mana
-	-- yang dijadikan output berdasarkan input operator
+-- modul mux8bit
+	-- Blok multiplexer 8 bit yang nanti akan digunakan
+	-- untuk mengatur digit mana yang akan diteruskan
+	-- ke converter binary_to_ASCII untuk menampilkan
+	-- hasil operasi aritmatika pada termite
 
 -- library
 library ieee;
