@@ -1,7 +1,7 @@
 -- FSM
-	-- FSM versi awal untuk rangkaian kalkulator yang menerima menggunakan UART 
-	-- meskipun input diterima melalui UART,
-	--  pergantian state pada FSM masih menggunakan switch
+	-- FSM untuk rangkaian kalkulator yang menerima input menggunakan UART 
+	-- pergantian state pada FSM menggunakan mekanisme pendeteksian start bit ( pada state A sampai dengan I )
+	-- dan juga switch (pada state I sampai dengan L [saat menampilkan hasil ke termite] )
 
 -- library
 library ieee;
